@@ -1,8 +1,8 @@
-//@ pragma UseQApplication
-//@ pragma ShellId ambxst
-//@ pragma DataDir $BASE/ambxst
-//@ pragma StateDir $BASE/ambxst
-//@ pragma CacheDir $BASE/ambxst
+// @pragma UseQApplication
+// @pragma ShellId ambxst
+// @pragma DataDir $BASE/ambxst
+// @pragma StateDir $BASE/ambxst
+// @pragma CacheDir $BASE/ambxst
 
 import QtQuick
 import Quickshell
@@ -15,7 +15,6 @@ import qs.modules.widgets.dashboard.wallpapers
 import qs.modules.notch
 import qs.modules.widgets.overview
 import qs.modules.widgets.presets
-import qs.modules.widgets.quotes
 import qs.modules.services
 import qs.modules.corners
 import qs.modules.frame
@@ -160,26 +159,6 @@ ShellRoot {
         }
     }
 
-    // Quotes popup
-    Variants {
-        model: {
-            const screens = Quickshell.screens;
-            const list = Config.bar?.screenList ?? [];
-            if (!list || list.length === 0)
-                return screens;
-            return screens.filter(screen => list.indexOf(screen.name) !== -1);
-        }
-
-        Loader {
-            id: quotesLoader
-            active: SuspendManager.wakeReady && (Visibilities.getForScreen(modelData.name) ? Visibilities.getForScreen(modelData.name).quotes : false)
-            required property ShellScreen modelData
-            sourceComponent: QuotesPopup {
-                screen: quotesLoader.modelData
-            }
-        }
-    }
-
     // Secure WlSessionLock lockscreen
     WlSessionLock {
         id: sessionLock
@@ -293,7 +272,7 @@ ShellRoot {
     Connections {
         target: ClipboardService
         function onListCompleted() {
-        // Service initialized and ready
+            // Service initialized and ready
         }
     }
 
@@ -309,7 +288,6 @@ ShellRoot {
                 _ = GlobalShortcuts.appId; // Force init (IPC pipe listener)
             });
         }
-
     }
 
     // Non-critical services — defer 2s after startup

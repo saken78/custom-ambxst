@@ -87,13 +87,13 @@ PanelWindow {
         screenrecordPopup.currentMode = ScreenRecorder.canRecordDirectly ? "region" : "portal";
         screenrecordPopup.recordAudioOutput = false;
         screenrecordPopup.recordAudioInput = false;
-        
+
         // Fetch windows for window mode
         Screenshot.fetchWindows();
-        
+
         // Go directly to active state (no freeze needed)
         screenrecordPopup.state = "active";
-        
+
         // Force focus
         if (modeGrid)
             modeGrid.forceActiveFocus();
@@ -114,8 +114,8 @@ PanelWindow {
                 var x = Math.round(selectionRect.x);
                 var y = Math.round(selectionRect.y);
 
-				x = x + screenrecordPopup.focusedMonitor.x;
-				y = y + screenrecordPopup.focusedMonitor.y;
+                x = x + screenrecordPopup.focusedMonitor.x;
+                y = y + screenrecordPopup.focusedMonitor.y;
 
                 var regionStr = w + "x" + h + "+" + x + "+" + y;
 
@@ -275,8 +275,8 @@ PanelWindow {
                     var x = Math.round(selectionRect.x);
                     var y = Math.round(selectionRect.y);
 
-					x = x + screenrecordPopup.focusedMonitor.x;
-					y = y + screenrecordPopup.focusedMonitor.y;
+                    x = x + screenrecordPopup.focusedMonitor.x;
+                    y = y + screenrecordPopup.focusedMonitor.y;
 
                     var regionStr = w + "x" + h + "+" + x + "+" + y;
 

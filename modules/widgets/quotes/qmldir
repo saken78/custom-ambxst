@@ -1,3 +1,0 @@
-module qs.modules.widgets.quotes
-QuotesButton 1.0 QuotesButton.qml
-QuotesPopup 1.0 QuotesPopup.qml

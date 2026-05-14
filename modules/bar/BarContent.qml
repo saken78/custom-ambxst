@@ -18,7 +18,6 @@ import qs.modules.components
 import qs.modules.services
 import qs.modules.globals
 import qs.modules.bar
-import qs.modules.widgets.quotes
 import qs.modules.widgets.stats
 import qs.config
 import "." as Bar
@@ -518,12 +517,12 @@ Item {
                         //     enableShadow: root.shadowsEnabled
                         // }
 
-                        SysTray {
-                            bar: root
-                            enableShadow: root.shadowsEnabled
-                            startRadius: root.innerRadius
-                            endRadius: root.innerRadius
-                        }
+                        // SysTray {
+                        //     bar: root
+                        //     enableShadow: root.shadowsEnabled
+                        //     startRadius: root.innerRadius
+                        //     endRadius: root.innerRadius
+                        // }
 
                         ControlsButton {
                             id: controlsButton

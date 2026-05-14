@@ -109,9 +109,9 @@ Singleton {
         launcherSelectedIndex = -1;
     }
 
-    // Persistent dashboard state across monitors  
+    // Persistent dashboard state across monitors
     property int dashboardCurrentTab: 0
-    
+
     // Widgets tab internal state (for prefix-based tabs)
     // 0=launcher, 1=clipboard, 2=emoji, 3=tmux, 4=wallpapers
     property int widgetsTabCurrentIndex: 0
@@ -153,16 +153,10 @@ Singleton {
         return active ? (active.launcher || active.dashboard || active.overview) : false;
     }
 
-    function getActiveQuotes() {
-        let active = Visibilities.getForActive();
-        return active ? active.quotes : false;
-    }
-
     // Legacy properties for backward compatibility - use active screen
     readonly property bool notchOpen: getActiveNotchOpen()
     readonly property bool overviewOpen: getActiveOverview()
     readonly property bool presetsOpen: getActivePresets()
-    readonly property bool quotesOpen: getActiveQuotes()
     readonly property bool launcherOpen: getActiveLauncher()
     readonly property bool dashboardOpen: getActiveDashboard()
 
@@ -177,7 +171,7 @@ Singleton {
     property bool screenshotToolVisible: false
     // property string screenshotToolMode: "normal" // DEPRECATED
     property string screenshotCaptureMode: "region" // region, window, screen
-    
+
     // Global selection state for synchronization
     property int screenshotSelectionX: 0
     property int screenshotSelectionY: 0
@@ -210,16 +204,8 @@ Singleton {
         return names;
     }
 
-    readonly property var _simpleThemeProps: [
-        "roundness", "oledMode", "lightMode", "font", "fontSize", "monoFont", "monoFontSize",
-        "tintIcons", "enableCorners", "animDuration",
-        "shadowOpacity", "shadowColor", "shadowXOffset", "shadowYOffset", "shadowBlur"
-    ]
-    readonly property var _srVariantProps: [
-        "gradientType", "gradientAngle", "gradientCenterX", "gradientCenterY",
-        "halftoneDotMin", "halftoneDotMax", "halftoneStart", "halftoneEnd",
-        "halftoneDotColor", "halftoneBackgroundColor", "itemColor", "opacity"
-    ]
+    readonly property var _simpleThemeProps: ["roundness", "oledMode", "lightMode", "font", "fontSize", "monoFont", "monoFontSize", "tintIcons", "enableCorners", "animDuration", "shadowOpacity", "shadowColor", "shadowXOffset", "shadowYOffset", "shadowBlur"]
+    readonly property var _srVariantProps: ["gradientType", "gradientAngle", "gradientCenterX", "gradientCenterY", "halftoneDotMin", "halftoneDotMax", "halftoneStart", "halftoneEnd", "halftoneDotColor", "halftoneBackgroundColor", "itemColor", "opacity"]
 
     // Deep copy a single SR variant
     function _copySrVariant(src) {
@@ -236,14 +222,14 @@ Singleton {
             console.warn("GlobalStates: Error cloning gradient: " + e);
             copy.gradient = [];
         }
-        
+
         try {
             copy.border = (src.border !== undefined) ? JSON.parse(JSON.stringify(src.border)) : [];
         } catch (e) {
             console.warn("GlobalStates: Error cloning border: " + e);
             copy.border = [];
         }
-        
+
         return copy;
     }
 
@@ -258,13 +244,17 @@ Singleton {
         if (src.gradient !== undefined) {
             try {
                 dest.gradient = JSON.parse(JSON.stringify(src.gradient));
-            } catch (e) { console.warn("GlobalStates: Error restoring gradient: " + e); }
+            } catch (e) {
+                console.warn("GlobalStates: Error restoring gradient: " + e);
+            }
         }
-        
+
         if (src.border !== undefined) {
             try {
                 dest.border = JSON.parse(JSON.stringify(src.border));
-            } catch (e) { console.warn("GlobalStates: Error restoring border: " + e); }
+            } catch (e) {
+                console.warn("GlobalStates: Error restoring border: " + e);
+            }
         }
     }
 
@@ -291,7 +281,8 @@ Singleton {
 
     // Restore theme from snapshot
     function restoreThemeSnapshot(snapshot) {
-        if (!snapshot) return;
+        if (!snapshot)
+            return;
 
         var theme = Config.theme;
         var srVariantNames = _getSrVariantNames();
@@ -380,7 +371,8 @@ Singleton {
 
     // Restore shell config from snapshot
     function restoreShellSnapshot(snapshot) {
-        if (!snapshot) return;
+        if (!snapshot)
+            return;
         var sections = Object.keys(_shellSections);
         for (var i = 0; i < sections.length; i++) {
             var section = sections[i];
@@ -388,7 +380,7 @@ Singleton {
             for (var j = 0; j < props.length; j++) {
                 var prop = props[j];
                 var val = snapshot[section][prop];
-                
+
                 // Special handling for system.idle (JsonObject)
                 if (section === "system" && prop === "idle" && val) {
                     if (val.general) {
@@ -403,17 +395,17 @@ Singleton {
                     if (val.listeners) {
                         Config.system.idle.listeners = JSON.parse(JSON.stringify(val.listeners));
                     }
-                }
+                } else
                 // Special handling for system.ocr (JsonObject)
-                else if (section === "system" && prop === "ocr" && val) {
+                if (section === "system" && prop === "ocr" && val) {
                     var keys = Object.keys(val);
                     for (var k = 0; k < keys.length; k++) {
                         var key = keys[k];
                         Config.system.ocr[key] = val[key];
                     }
-                }
+                } else
                 // Deep copy arrays or objects
-                else if (typeof val === 'object' && val !== null) {
+                if (typeof val === 'object' && val !== null) {
                     Config[section][prop] = JSON.parse(JSON.stringify(val));
                 } else {
                     Config[section][prop] = val;
@@ -441,7 +433,7 @@ Singleton {
             Config.saveLockscreen();
             Config.saveDesktop();
             Config.saveSystem();
-            
+
             shellHasChanges = false;
             shellSnapshot = null;
             Config.pauseAutoSave = false;
@@ -464,24 +456,7 @@ Singleton {
     property var compositorSnapshot: null
 
     // Compositor config properties (Hyprland)
-    readonly property var _compositorProps: [
-        "layout",
-        "syncBorderWidth", "borderSize",
-        "syncRoundness", "rounding",
-        "gapsIn", "gapsOut",
-        "borderAngle", "inactiveBorderAngle",
-        "syncBorderColor", "activeBorderColor", "inactiveBorderColor",
-        "shadowEnabled", "syncShadowColor", "syncShadowOpacity",
-        "shadowRange", "shadowRenderPower", "shadowScale",
-        "shadowOpacity", "shadowSharp", "shadowIgnoreWindow",
-        "blurEnabled", "blurSize", "blurPasses", "blurXray",
-        "blurNewOptimizations", "blurIgnoreOpacity",
-        "blurNoise", "blurContrast", "blurBrightness", "blurVibrancy",
-        "blurVibrancyDarkness", "blurSpecial", "blurPopups", "blurPopupsIgnorealpha",
-        "blurInputMethods", "blurInputMethodsIgnorealpha",
-        "blurExplicitIgnoreAlpha", "blurIgnoreAlphaValue",
-        "shadowOffset", "shadowColorInactive"
-    ]
+    readonly property var _compositorProps: ["layout", "syncBorderWidth", "borderSize", "syncRoundness", "rounding", "gapsIn", "gapsOut", "borderAngle", "inactiveBorderAngle", "syncBorderColor", "activeBorderColor", "inactiveBorderColor", "shadowEnabled", "syncShadowColor", "syncShadowOpacity", "shadowRange", "shadowRenderPower", "shadowScale", "shadowOpacity", "shadowSharp", "shadowIgnoreWindow", "blurEnabled", "blurSize", "blurPasses", "blurXray", "blurNewOptimizations", "blurIgnoreOpacity", "blurNoise", "blurContrast", "blurBrightness", "blurVibrancy", "blurVibrancyDarkness", "blurSpecial", "blurPopups", "blurPopupsIgnorealpha", "blurInputMethods", "blurInputMethodsIgnorealpha", "blurExplicitIgnoreAlpha", "blurIgnoreAlphaValue", "shadowOffset", "shadowColorInactive"]
 
     // Create a deep copy of the current compositor config
     function createCompositorSnapshot() {
@@ -501,7 +476,8 @@ Singleton {
 
     // Restore compositor config from snapshot
     function restoreCompositorSnapshot(snapshot) {
-        if (!snapshot) return;
+        if (!snapshot)
+            return;
         for (var i = 0; i < _compositorProps.length; i++) {
             var prop = _compositorProps[i];
             if (snapshot[prop] !== undefined) {
