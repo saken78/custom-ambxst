@@ -32,11 +32,14 @@ NotchAnimationBehavior {
     implicitHeight: 430
 
     property var lruAccessOrder: [0]
-    property var lruTabsLoaded: ({0: true})
+    property var lruTabsLoaded: ({
+            0: true
+        })
 
     function updateLRUAccess(tabIndex) {
         const idx = lruAccessOrder.indexOf(tabIndex);
-        if (idx !== -1) lruAccessOrder.splice(idx, 1);
+        if (idx !== -1)
+            lruAccessOrder.splice(idx, 1);
         lruAccessOrder.push(tabIndex);
         updateLoadedTabs();
     }
@@ -57,7 +60,8 @@ NotchAnimationBehavior {
     }
 
     function shouldTabBeLoaded(tabIndex) {
-        if (tabIndex === 0) return true;
+        if (tabIndex === 0)
+            return true;
         if (Config.performance.dashboardPersistTabs) {
             return lruTabsLoaded[tabIndex] === true;
         }
@@ -129,9 +133,12 @@ NotchAnimationBehavior {
                 onWheel: event => {
                     let scrollUp = event.angleDelta.y > 0;
                     let newIndex = root.state.currentTab;
-                    if (scrollUp && newIndex > 0) newIndex--;
-                    else if (!scrollUp && newIndex < root.tabCount - 1) newIndex++;
-                    if (newIndex !== root.state.currentTab) stack.navigateToTab(newIndex);
+                    if (scrollUp && newIndex > 0)
+                        newIndex--;
+                    else if (!scrollUp && newIndex < root.tabCount - 1)
+                        newIndex++;
+                    if (newIndex !== root.state.currentTab)
+                        stack.navigateToTab(newIndex);
                 }
             }
 
@@ -160,11 +167,17 @@ NotchAnimationBehavior {
 
                 Behavior on animatedY1 {
                     enabled: Config.animDuration > 0
-                    NumberAnimation { duration: Config.animDuration / 3; easing.type: Easing.OutSine }
+                    NumberAnimation {
+                        duration: Config.animDuration / 3
+                        easing.type: Easing.OutSine
+                    }
                 }
                 Behavior on animatedY2 {
                     enabled: Config.animDuration > 0
-                    NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutSine }
+                    NumberAnimation {
+                        duration: Config.animDuration
+                        easing.type: Easing.OutSine
+                    }
                 }
 
                 onTargetY1Changed: animatedY1 = targetY1
@@ -205,7 +218,10 @@ NotchAnimationBehavior {
 
                             Behavior on color {
                                 enabled: Config.animDuration > 0
-                                ColorAnimation { duration: Config.animDuration; easing.type: Easing.OutCubic }
+                                ColorAnimation {
+                                    duration: Config.animDuration
+                                    easing.type: Easing.OutCubic
+                                }
                             }
                         }
                         onClicked: stack.navigateToTab(index)
@@ -225,7 +241,10 @@ NotchAnimationBehavior {
                 opacity: GlobalStates.settingsWindowVisible ? 0 : 1
                 Behavior on opacity {
                     enabled: Config.animDuration > 0
-                    NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutCubic }
+                    NumberAnimation {
+                        duration: Config.animDuration
+                        easing.type: Easing.OutCubic
+                    }
                 }
             }
 
@@ -238,7 +257,9 @@ NotchAnimationBehavior {
                 flat: true
                 hoverEnabled: true
                 z: 1
-                background: Rectangle { color: "transparent" }
+                background: Rectangle {
+                    color: "transparent"
+                }
                 contentItem: Text {
                     text: Icons.gear
                     font.family: Icons.font
@@ -249,7 +270,10 @@ NotchAnimationBehavior {
                     verticalAlignment: Text.AlignVCenter
                     Behavior on color {
                         enabled: Config.animDuration > 0
-                        ColorAnimation { duration: Config.animDuration; easing.type: Easing.OutCubic }
+                        ColorAnimation {
+                            duration: Config.animDuration
+                            easing.type: Easing.OutCubic
+                        }
                     }
                 }
                 onClicked: GlobalShortcuts.toggleSettings()
@@ -284,8 +308,10 @@ NotchAnimationBehavior {
                 }
 
                 function navigateToTab(index) {
-                    if (index < 0 || index >= root.tabCount) return;
-                    if (index === root.state.currentTab) return;
+                    if (index < 0 || index >= root.tabCount)
+                        return;
+                    if (index === root.state.currentTab)
+                        return;
 
                     if (root.state.currentTab === 0 && index !== 0) {
                         GlobalStates.clearLauncherState();
@@ -298,30 +324,6 @@ NotchAnimationBehavior {
                     if (index === 0) {
                         Notifications.hideAllPopups();
                         focusUnifiedLauncherTimer.restart();
-                    }
-                }
-
-                component TabLoader : Loader {
-                    anchors.fill: parent
-                    active: root.shouldTabBeLoaded(index) || root.state.currentTab === index
-                    visible: root.state.currentTab === index
-                    opacity: visible ? 1 : 0
-                    transform: Translate {
-                        y: visible ? 0 : (root.state.currentTab > index ? -20 : 20)
-                        Behavior on y {
-                            enabled: Config.animDuration > 0
-                            NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
-                        }
-                    }
-                    Behavior on opacity {
-                        enabled: Config.animDuration > 0
-                        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutQuart }
-                    }
-                    onLoaded: {
-                        if (visible && item && item.focusSearchInput) focusUnifiedLauncherTimer.restart();
-                    }
-                    onVisibleChanged: {
-                        if (visible && item && item.focusSearchInput) focusUnifiedLauncherTimer.restart();
                     }
                 }
 
@@ -339,9 +341,12 @@ NotchAnimationBehavior {
 
                 property var currentItem: {
                     switch (root.state.currentTab) {
-                        case 0: return children[0].item;
-                        case 1: return children[1].item;
-                        default: return null;
+                    case 0:
+                        return children[0].item;
+                    case 1:
+                        return children[1].item;
+                    default:
+                        return null;
                     }
                 }
 
@@ -363,7 +368,8 @@ NotchAnimationBehavior {
                     onPositionChanged: mouse => {
                         let deltaY = mouse.y - startY;
                         let deltaX = Math.abs(mouse.x - startX);
-                        if (Math.abs(deltaY) > 20 && deltaX < 30) swiping = true;
+                        if (Math.abs(deltaY) > 20 && deltaX < 30)
+                            swiping = true;
                     }
                     onReleased: mouse => {
                         if (swiping) {
@@ -381,6 +387,38 @@ NotchAnimationBehavior {
         }
     }
 
+    component TabLoader: Loader {
+        anchors.fill: parent
+        active: root.shouldTabBeLoaded(index) || root.state.currentTab === index
+        visible: root.state.currentTab === index
+        opacity: visible ? 1 : 0
+        transform: Translate {
+            y: visible ? 0 : (root.state.currentTab > index ? -20 : 20)
+            Behavior on y {
+                enabled: Config.animDuration > 0
+                NumberAnimation {
+                    duration: Config.animDuration
+                    easing.type: Easing.OutQuart
+                }
+            }
+        }
+        Behavior on opacity {
+            enabled: Config.animDuration > 0
+            NumberAnimation {
+                duration: Config.animDuration
+                easing.type: Easing.OutQuart
+            }
+        }
+        onLoaded: {
+            if (visible && item && item.focusSearchInput)
+                focusUnifiedLauncherTimer.restart();
+        }
+        onVisibleChanged: {
+            if (visible && item && item.focusSearchInput)
+                focusUnifiedLauncherTimer.restart();
+        }
+    }
+
     Shortcut {
         sequence: "Ctrl+Tab"
         enabled: GlobalStates.dashboardOpen
@@ -392,7 +430,8 @@ NotchAnimationBehavior {
         enabled: GlobalStates.dashboardOpen
         onActivated: {
             let prev = root.state.currentTab - 1;
-            if (prev < 0) prev = root.tabCount - 1;
+            if (prev < 0)
+                prev = root.tabCount - 1;
             stack.navigateToTab(prev);
         }
     }
@@ -407,16 +446,26 @@ NotchAnimationBehavior {
 
     Behavior on animatedWidth {
         enabled: Config.animDuration > 0
-        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutBack; easing.overshoot: 1.1 }
+        NumberAnimation {
+            duration: Config.animDuration
+            easing.type: Easing.OutBack
+            easing.overshoot: 1.1
+        }
     }
     Behavior on animatedHeight {
         enabled: Config.animDuration > 0
-        NumberAnimation { duration: Config.animDuration; easing.type: Easing.OutBack; easing.overshoot: 1.1 }
+        NumberAnimation {
+            duration: Config.animDuration
+            easing.type: Easing.OutBack
+            easing.overshoot: 1.1
+        }
     }
 
     Component {
         id: unifiedLauncherComponent
-        WidgetsTab { leftPanelWidth: root.leftPanelWidth }
+        WidgetsTab {
+            leftPanelWidth: root.leftPanelWidth
+        }
     }
 
     Component {
