@@ -34,10 +34,10 @@ done
 # fi
 #
 # EasyEffects
-if command -v easyeffects >/dev/null; then
-  echo "Starting EasyEffects..."
-  pkill -x easyeffects 2>/dev/null || true
-  nohup easyeffects --gapplication-service >/dev/null 2>&1 &
-else
-  echo "Warning: easyeffects not found in PATH"
-fi
+# if command -v easyeffects >/dev/null; then
+#   echo "Starting EasyEffects..."
+#   pkill -x easyeffects 2>/dev/null || true
+#   nohup easyeffects --gapplication-service >/dev/null 2>&1 &
+# else
+#   echo "Warning: easyeffects not found in PATH"
+# fi
