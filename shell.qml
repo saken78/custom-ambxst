@@ -20,7 +20,7 @@ import qs.modules.corners
 import qs.modules.frame
 import qs.modules.components
 import qs.modules.desktop
-import qs.modules.lockscreen
+// import qs.modules.lockscreen
 import qs.modules.dock
 import qs.modules.globals
 import qs.modules.shell
@@ -160,13 +160,13 @@ ShellRoot {
     }
 
     // Secure WlSessionLock lockscreen
-    WlSessionLock {
-        id: sessionLock
-        locked: GlobalStates.lockscreenVisible
+    // WlSessionLock {
+    //     id: sessionLock
+    //     locked: GlobalStates.lockscreenVisible
 
-        // Surface auto-created per screen
-        LockScreen {}
-    }
+    //     // Surface auto-created per screen
+    //     LockScreen {}
+    // }
 
     HyprlandConfig {
         id: hyprlandConfig
