@@ -552,10 +552,6 @@ Rectangle {
                     section: 2
                 },
                 {
-                    component: "EasyEffectsPanel.qml",
-                    section: 3
-                },
-                {
                     component: "ThemePanel.qml",
                     section: 4
                 },
