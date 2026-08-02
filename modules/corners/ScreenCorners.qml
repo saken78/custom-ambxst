@@ -12,9 +12,7 @@ PanelWindow {
 
     // Fullscreen detection
     readonly property bool activeWindowFullscreen: {
-        if (!monitor)
-            return false;
-
+        if (!monitor?.activeWorkspace) return false;
         const activeWorkspaceId = monitor.activeWorkspace.id;
         const monId = monitor.id;
 

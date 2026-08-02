@@ -76,9 +76,7 @@ PanelWindow {
 
     readonly property var hyprlandMonitor: Hyprland.monitorFor(targetScreen)
     readonly property bool hasFullscreenWindow: {
-        if (!hyprlandMonitor)
-            return false;
-
+        if (!hyprlandMonitor?.activeWorkspace) return false;
         const activeWorkspaceId = hyprlandMonitor.activeWorkspace.id;
         const monId = hyprlandMonitor.id;
 

@@ -41,21 +41,22 @@ Item {
 
     // Monitor reference and reference to toplevels on monitor
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
-    readonly property var toplevels: hyprlandMonitor.activeWorkspace.toplevels.values
+    // readonly property var toplevels: hyprlandMonitor.activeWorkspace.toplevels.values
 
     // Fullscreen detection - check if a toplevel is fullscreen on this screen
     readonly property bool activeWindowFullscreen: {
-        if (!hyprlandMonitor || !toplevels)
-            return false;
-
-        // Check all toplevels on active workspace
-        for (var i = 0; i < toplevels.length; i++) {
-            // Checks first if the wayland handle is ready
-            if (toplevels[i].wayland && toplevels[i].wayland.fullscreen == true) {
-                return true;
-            }
-        }
+      if (!hyprlandMonitor?.activeWorkspace?.toplevels) {
         return false;
+      }
+
+      const toplevels = hyprlandMonitor.activeWorkspace.toplevels.values;
+
+      for (var i = 0; i < toplevels.length; i++) {
+        if (toplevels[i].wayland && toplevels[i].wayland.fullscreen == true){
+          return true;
+        }
+      }
+      return false;
     }
 
     // Whether auto-hide should be active (not pinned, or fullscreen forces it)

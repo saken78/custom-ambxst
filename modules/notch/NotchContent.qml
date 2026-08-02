@@ -29,22 +29,19 @@ Item {
 
     // Monitor reference and refrence to toplevels on monitor
     readonly property var hyprlandMonitor: Hyprland.monitorFor(screen)
-    readonly property var toplevels: hyprlandMonitor.activeWorkspace.toplevels.values
+    // readonly property var toplevels: hyprlandMonitor.activeWorkspace.toplevels.values
 
     // Check if there are any windows on the current monitor and workspace
     readonly property bool hasWindows: {
-        if (!hyprlandMonitor) return false;
-        const activeWorkspaceId = hyprlandMonitor.activeWorkspace.id;
-        const monId = hyprlandMonitor.id;
-        const wins = HyprlandData.windowList;
-        for (let i = 0; i < wins.length; i++) {
-            // We only care about windows on the current monitor and workspace
-            // that are not floating (floating windows usually don't trigger auto-hide)
-            if (wins[i].monitor === monId && wins[i].workspace.id === activeWorkspaceId && !wins[i].floating) {
-                return true;
-            }
-        }
-        return false;
+      if (!hyprlandMonitor?.activeWorkspace) return false;
+      const activeWorkspaceId = hyprlandMonitor.activeWorkspace.id;
+      const monId = hyprlandMonitor.id;
+      const wins = HyprlandData.windowList;
+      for (let i = 0; i < wins.length; i++) {
+          if (wins[i].monitor === monId && wins[i].workspace.id === activeWorkspaceId && !wins[i].floating)
+            return true;
+      }
+      return false;
     }
 
     // Get the bar position for this screen
@@ -76,14 +73,11 @@ Item {
 
     // Fullscreen detection - check if active toplevel is fullscreen on this screen
     readonly property bool activeWindowFullscreen: {
-        if (!hyprlandMonitor || !toplevels) return false;
-
-        // Check all toplevels on active workspcace
+        if (!hyprlandMonitor?.activeWorkspace?.toplevels) return false;
+        const toplevels = hyprlandMonitor.activeWorkspace.toplevels.values;
         for (var i = 0; i < toplevels.length; i++) {
-            // Checks first if the wayland handle is ready
-            if (toplevels[i].wayland && toplevels[i].wayland.fullscreen == true) {
-               return true;
-            }
+            if (toplevels[i].wayland && toplevels[i].wayland.fullscreen == true)
+                return true;
         }
         return false;
     }
