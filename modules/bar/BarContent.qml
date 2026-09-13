@@ -391,6 +391,12 @@ Item {
                             endRadius: (root.pinButtonVisible) ? root.innerRadius : (root.dockAtStart ? root.innerRadius : root.outerRadius)
                         }
 
+                        Bar.TerminalButton {
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
+                            enableShadow: root.shadowsEnabled
+                        }
+
                         // Pin button (horizontal)
                         Loader {
                             active: Config.bar?.showPinButton ?? true
@@ -770,6 +776,14 @@ Item {
                             layerEnabled: root.shadowsEnabled
                             startRadius: root.innerRadius
                             endRadius: root.innerRadius
+                        }
+
+                        Bar.TerminalButton {
+                            Layout.preferredHeight: 36
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
+                            vertical: true
+                            enableShadow: root.shadowsEnabled
                         }
 
                         PowerButton {

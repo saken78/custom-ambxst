@@ -3,7 +3,6 @@ import time
 import sys
 import os
 import json
-import subprocess
 import re
 
 
@@ -13,7 +12,6 @@ class SystemMonitor:
         self.prev_cpu_idle = 0
         self.monitored_disks = disks
         self.cpu_model = self._detect_cpu_model()
-        self.gpu_info = self._detect_gpus()
         self.disk_types = self._detect_disk_types(disks)
 
     def _detect_cpu_model(self):
@@ -35,65 +33,6 @@ class SystemMonitor:
         except:
             pass
         return "Unknown CPU"
-
-    def _detect_gpus(self):
-        gpus = []
-        nvidia_base = "/proc/driver/nvidia/gpus"
-        if os.path.exists(nvidia_base):
-            for entry in os.listdir(nvidia_base):
-                path = os.path.join(nvidia_base, entry, "information")
-                if os.path.exists(path):
-                    gpu = {
-                        "vendor": "nvidia",
-                        "name": "NVIDIA GPU",
-                        "pci_id": entry,
-                        "power_path": "",
-                    }
-                    try:
-                        with open(path, "r") as f:
-                            for line in f:
-                                if line.startswith("Model:"):
-                                    gpu["name"] = line.split(":", 1)[1].strip()
-                    except:
-                        pass
-                    pci_path = f"/sys/bus/pci/devices/{entry}/power/runtime_status"
-                    if os.path.exists(pci_path):
-                        gpu["power_path"] = pci_path
-                    gpus.append(gpu)
-
-        drm_base = "/sys/class/drm"
-        if os.path.exists(drm_base):
-            for card in os.listdir(drm_base):
-                if not card.startswith("card") or "-" in card:
-                    continue
-
-                vendor_path = f"{drm_base}/{card}/device/vendor"
-                if not os.path.exists(vendor_path):
-                    continue
-
-                try:
-                    with open(vendor_path, "r") as f:
-                        vendor_id = f.read().strip().lower()
-
-                    if vendor_id == "0x1002":
-                        gpus.append(
-                            {
-                                "vendor": "amd",
-                                "name": f"AMD GPU {card[-1]}",
-                                "card": card,
-                            }
-                        )
-                    elif vendor_id == "0x8086":
-                        gpus.append(
-                            {
-                                "vendor": "intel",
-                                "name": f"Intel GPU {card[-1]}",
-                                "card": card,
-                            }
-                        )
-                except:
-                    pass
-        return gpus
 
     def _detect_disk_types(self, disks):
         types = {}
@@ -202,66 +141,21 @@ class SystemMonitor:
                 usage_map[mount] = 0.0
         return usage_map
 
-    def get_gpu_stats(self):
-        usages = []
-        temps = []
-        for gpu in self.gpu_info:
-            u, t = 0.0, -1
-            if gpu["vendor"] == "nvidia":
-                is_active = True
-                if gpu.get("power_path"):
-                    try:
-                        with open(gpu["power_path"], "r") as f:
-                            is_active = f.read().strip() == "active"
-                    except:
-                        pass
+    def get_uptime(self):
+        try:
+            with open("/proc/uptime", "r") as f:
+                parts = f.read().split()
+            return float(parts[0]) if parts else 0.0
+        except:
+            return 0.0
 
-                if is_active:
-                    try:
-                        out = (
-                            subprocess.check_output(
-                                [
-                                    "nvidia-smi",
-                                    "-i",
-                                    gpu["pci_id"],
-                                    "--query-gpu=utilization.gpu,temperature.gpu",
-                                    "--format=csv,noheader,nounits",
-                                ]
-                            )
-                            .decode("utf-8")
-                            .strip()
-                        )
-                        parts = out.split(",")
-                        if len(parts) >= 2:
-                            u, t = float(parts[0]), int(parts[1])
-                    except:
-                        pass
-                else:
-                    u, t = 0.0, -1
-            elif gpu["vendor"] == "amd":
-                card = gpu["card"]
-                try:
-                    with open(
-                        f"/sys/class/drm/{card}/device/gpu_busy_percent", "r"
-                    ) as f:
-                        u = float(f.read().strip())
-                except:
-                    pass
-                try:
-                    hwmon_base = f"/sys/class/drm/{card}/device/hwmon"
-                    if os.path.exists(hwmon_base):
-                        hwmon_dir = os.listdir(hwmon_base)[0]
-                        with open(
-                            os.path.join(hwmon_base, hwmon_dir, "temp1_input"), "r"
-                        ) as f:
-                            t = int(f.read().strip()) // 1000
-                except:
-                    pass
-            elif gpu["vendor"] == "intel":
-                pass
-            usages.append(u)
-            temps.append(t)
-        return usages, temps
+    def get_loadavg(self):
+        try:
+            with open("/proc/loadavg", "r") as f:
+                parts = f.read().split()
+            return [float(parts[i]) for i in range(min(3, len(parts)))]
+        except:
+            return [0.0, 0.0, 0.0]
 
 
 if __name__ == "__main__":
@@ -284,10 +178,7 @@ if __name__ == "__main__":
             {
                 "static": {
                     "cpu_model": monitor.cpu_model,
-                    "gpu_names": [g["name"] for g in monitor.gpu_info],
-                    "gpu_vendors": [g["vendor"] for g in monitor.gpu_info],
                     "disk_types": monitor.disk_types,
-                    "gpu_count": len(monitor.gpu_info),
                 }
             }
         ),
@@ -300,7 +191,8 @@ if __name__ == "__main__":
             cpu_temp = monitor.get_cpu_temp()
             ram_usage, ram_total, ram_used, ram_avail = monitor.get_mem()
             disk_usage = monitor.get_disk_usage(disks)
-            gpu_usages, gpu_temps = monitor.get_gpu_stats()
+            uptime_sec = monitor.get_uptime()
+            loadavg = monitor.get_loadavg()
 
             print(
                 json.dumps(
@@ -313,12 +205,8 @@ if __name__ == "__main__":
                             "available": ram_avail,
                         },
                         "disk": {"usage": disk_usage},
-                        "gpu": {
-                            "detected": len(monitor.gpu_info) > 0,
-                            "count": len(monitor.gpu_info),
-                            "usages": gpu_usages,
-                            "temps": gpu_temps,
-                        },
+                        "uptime": uptime_sec,
+                        "loadavg": loadavg,
                     }
                 ),
                 flush=True,

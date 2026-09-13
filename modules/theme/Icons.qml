@@ -266,4 +266,14 @@ QtObject {
     readonly property string thermometer: temperature
     readonly property string windowsLogo: terminalWindow
     readonly property string frameCorners: crop
+
+    // Hunk Hunk 
+    readonly property string android: "\ue008"
+    readonly property string bird: "\ue72c"
+    readonly property string bowlfood: "\ueaa4"
+    readonly property string bowlsteam: "\ue8e4"
+    readonly property string dog: "\ue74a"
+    readonly property string cat: "\ue748"
+    readonly property string terminalwindow: "\ueae8"
+    readonly property string cheese: "\ue9fe"
 }
