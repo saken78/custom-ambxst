@@ -94,7 +94,7 @@ Item {
 
             // CPU
             Text {
-                text: Icons.cpu
+                text: Icons.speedometer
                 font.family: Icons.font
                 font.pixelSize: 18
                 color: Styling.srItem("overprimary")
@@ -134,8 +134,7 @@ Item {
                 color: Colors.overBackground
             }
 
-            // ── Disk (mount pertama dari Config.system.disks) ──
-            // ICON: sesuaikan tipe → Icons.ssd (QML:66), Icons.hdd (QML:67), Icons.disk (QML:65) di modules/theme/Icons.qml
+            // ── Disk ──
             Separator {
                 vert: true
                 visible: root.primaryDiskAvailable
@@ -143,7 +142,7 @@ Item {
 
             Text {
                 visible: root.primaryDiskAvailable
-                text: Icons.ssd
+                text: Icons.harddrive
                 font.family: Icons.font
                 font.pixelSize: 18
                 color: Styling.srItem("overprimary")

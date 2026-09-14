@@ -143,8 +143,10 @@ QtObject {
 
     // Battery
     readonly property string lightning: ""
+    readonly property string lightningslash: "\ue2e0"
+    readonly property string lightninga: "\uea84"
     // readonly property string plug: ""
-    readonly property string plug: ""
+    // readonly property string plug: ""
 
     // Power-profiles
     readonly property string powerSave: ""
@@ -276,4 +278,8 @@ QtObject {
     readonly property string cat: "\ue748"
     readonly property string terminalwindow: "\ueae8"
     readonly property string cheese: "\ue9fe"
+    readonly property string speedometer: "\uee74"
+    readonly property string eyeopen: "\ue220"
+    readonly property string horse: "\ue2b0"
+    readonly property string harddrive: "\ue2a0"
 }

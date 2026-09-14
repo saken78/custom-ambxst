@@ -531,6 +531,13 @@ Item {
                         //     endRadius: root.innerRadius
                         // }
 
+                        PowerButton {
+                            id: powerButton
+                            startRadius: root.innerRadius
+                            endRadius: root.outerRadius
+                            enableShadow: root.shadowsEnabled
+                        }
+
                         ControlsButton {
                             id: controlsButton
                             bar: root
@@ -561,13 +568,6 @@ Item {
                             layerEnabled: root.shadowsEnabled
                             startRadius: root.innerRadius
                             endRadius: root.innerRadius
-                        }
-
-                        PowerButton {
-                            id: powerButton
-                            startRadius: root.innerRadius
-                            endRadius: root.outerRadius
-                            enableShadow: root.shadowsEnabled
                         }
                     }
                 }
@@ -746,6 +746,15 @@ Item {
                             }
                         }
 
+                        PowerButton {
+                            id: powerButtonVert
+                            Layout.preferredHeight: 36
+                            startRadius: root.innerRadius
+                            endRadius: root.outerRadius
+                            vertical: true
+                            enableShadow: root.shadowsEnabled
+                        }
+
                         ControlsButton {
                             id: controlsButtonVert
                             bar: root
@@ -782,15 +791,6 @@ Item {
                             Layout.preferredHeight: 36
                             startRadius: root.innerRadius
                             endRadius: root.innerRadius
-                            vertical: true
-                            enableShadow: root.shadowsEnabled
-                        }
-
-                        PowerButton {
-                            id: powerButtonVert
-                            Layout.preferredHeight: 36
-                            startRadius: root.innerRadius
-                            endRadius: root.outerRadius
                             vertical: true
                             enableShadow: root.shadowsEnabled
                         }
