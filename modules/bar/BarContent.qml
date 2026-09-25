@@ -530,14 +530,6 @@ Item {
                         //     startRadius: root.innerRadius
                         //     endRadius: root.innerRadius
                         // }
-
-                        PowerButton {
-                            id: powerButton
-                            startRadius: root.innerRadius
-                            endRadius: root.outerRadius
-                            enableShadow: root.shadowsEnabled
-                        }
-
                         ControlsButton {
                             id: controlsButton
                             bar: root
@@ -569,6 +561,15 @@ Item {
                             startRadius: root.innerRadius
                             endRadius: root.innerRadius
                         }
+
+                        PowerButton {
+                            id: powerButton
+                            startRadius: root.innerRadius
+                            endRadius: root.outerRadius
+                            enableShadow: root.shadowsEnabled
+                        }
+
+
                     }
                 }
 
