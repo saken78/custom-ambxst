@@ -282,4 +282,5 @@ QtObject {
     readonly property string eyeopen: "\ue220"
     readonly property string horse: "\ue2b0"
     readonly property string harddrive: "\ue2a0"
+    readonly property string brain: "\ue74e"
 }
