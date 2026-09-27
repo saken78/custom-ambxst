@@ -7,6 +7,7 @@ ToggleButton {
     id: powerButton
     buttonIcon: Icons.brain
     tooltipText: "Power Menu"
+    active: Visibilities.currentActiveModule === "powermenu"
     onToggle: function () {
         if (Visibilities.currentActiveModule === "powermenu") {
             Visibilities.setActiveModule("");

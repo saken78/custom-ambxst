@@ -8,6 +8,7 @@ import qs.modules.theme
 ToggleButton {
     // buttonIcon: Config.bar.launcherIcon || Qt.resolvedUrl("../../../assets/ambxst/ambxst-icon.svg").toString().replace("file://", "")
     buttonIcon: Qt.resolvedUrl("../../../assets/ambxst/cat-bold.svg").toString().replace("file://", "")
+    active: GlobalStates.launcherOpen
     iconTint: Config.bar.launcherIconTint
     iconFullTint: Config.bar.launcherIconFullTint
     iconSize: Config.bar.launcherIconSize

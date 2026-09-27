@@ -7,6 +7,7 @@ ToggleButton {
     id: toolsButton
     buttonIcon: Icons.toolbox
     tooltipText: "Tools"
+    active: Visibilities.currentActiveModule === "tools"
     onToggle: function () {
         if (Visibilities.currentActiveModule === "tools") {
             Visibilities.setActiveModule("");
