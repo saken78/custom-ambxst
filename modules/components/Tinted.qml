@@ -8,6 +8,7 @@ Item {
     id: root
     property var sourceItem: null  // The icon item to tint
     property bool fullTint: false  // If true, apply solid primary color instead of shader
+    property color tintColor: Styling.srItem("overprimary")
 
     // Subset of colors for optimization (consistent with TintedWallpaper.qml)
     readonly property var optimizedPalette: [
@@ -91,7 +92,7 @@ Item {
                 source: internalSource
                 brightness: 1.0
                 colorization: 1.0
-                colorizationColor: Styling.srItem("overprimary")
+                colorizationColor: root.tintColor
             }
 
             // Shader-based tint
