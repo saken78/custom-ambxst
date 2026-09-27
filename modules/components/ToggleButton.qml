@@ -13,6 +13,7 @@ Button {
     required property string buttonIcon
     required property string tooltipText
     required property var onToggle
+    property bool active: false
     property bool iconTint: false
     property bool iconFullTint: false
     property int iconSize: 18
@@ -32,7 +33,7 @@ Button {
 
     background: StyledRect {
         id: bg
-        variant: "bg"
+        variant: root.active ? "primary" : "bg"
         enableShadow: root.enableShadow && Config.showBackground
 
         // Map start/end to corners based on vertical property
@@ -44,7 +45,7 @@ Button {
         Rectangle {
             anchors.fill: parent
             color: parent.item || "transparent"
-            opacity: root.pressed ? 0.5 : (root.hovered ? 0.25 : 0)
+            opacity: root.pressed ? 0.5 : (root.active ? 0 : (root.hovered ? 0.25 : 0))
             radius: parent.radius ?? 0
 
             Behavior on opacity {
@@ -65,7 +66,7 @@ Button {
             textFormat: Text.RichText
             font.family: Icons.font
             font.pixelSize: 18
-            color: root.pressed ? Colors.background : (Styling.srItem("overprimary") || Colors.foreground)
+            color: root.active ? (Styling.srItem("primary") || Colors.background) : (Styling.srItem("overprimary") || Colors.foreground)
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -93,6 +94,7 @@ Button {
                 sourceItem: iconImage
                 active: root.iconTint || root.iconFullTint
                 fullTint: root.iconFullTint
+                tintColor: root.active ? Styling.srItem("primary") : Styling.srItem("overprimary")
             }
         }
     }
