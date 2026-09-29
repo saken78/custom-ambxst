@@ -23,12 +23,9 @@ has_font() { fc-list 2>/dev/null | grep -qi "$1"; }
 	exit 1
 }
 
-# === Distro Detection ===
+# === Distro Check (Arch Linux only) ===
 detect_distro() {
-	[[ -f /etc/NIXOS ]] && echo "nixos" && return
 	has_cmd pacman && echo "arch" && return
-	has_cmd dnf && echo "fedora" && return
-	has_cmd apt && echo "debian" && return
 	echo "unknown"
 }
 
@@ -91,57 +88,9 @@ filter_packages() {
 	echo "${needed[@]}"
 }
 
-# === Dependency Installation ===
+# === Dependency Installation (Arch Linux) ===
 install_dependencies() {
 	case "$DISTRO" in
-	nixos)
-		local FLAKE_URI="${1:-github:Axenide/Ambxst}"
-		nix profile list | grep -q "ddcutil" && nix profile remove ddcutil 2>/dev/null || true
-
-		if nix profile list | grep -q "Ambxst"; then
-			log_info "Updating Ambxst..."
-			nix profile upgrade Ambxst --refresh --impure
-		else
-			log_info "Installing Ambxst..."
-			nix profile add "$FLAKE_URI" --impure
-		fi
-		;;
-
-	fedora)
-		log_info "Enabling COPR repositories..."
-		sudo dnf install -y --best --allowerasing --setopt=install_weak_deps=False dnf-plugins-core
-		yes | sudo dnf copr enable errornointernet/quickshell
-		yes | sudo dnf copr enable solopasha/hyprland
-		yes | sudo dnf copr enable zirconium/packages
-		yes | sudo dnf copr enable iucar/cran
-
-		local PKGS=(
-			kitty tmux fuzzel network-manager-applet blueman
-			pipewire wireplumber easyeffects playerctl
-			qt6-qtbase qt6-qtdeclarative qt6-qtwayland qt6-qtsvg qt6-qttools
-			qt6-qtimageformats qt6-qtmultimedia qt6-qtshadertools
-			kf6-syntax-highlighting kf6-breeze-icons hicolor-icon-theme
-			brightnessctl ddcutil fontconfig grim slurp ImageMagick jq sqlite upower
-			wl-clipboard wlsunset wtype zbar glib2 pipx zenity power-profiles-daemon
-			python3.12 libnotify flatpak
-			tesseract tesseract-langpack-eng tesseract-langpack-spa tesseract-langpack-jpn
-			tesseract-langpack-chi_sim tesseract-langpack-chi_tra tesseract-langpack-kor tesseract-langpack-lat
-			google-roboto-fonts google-roboto-mono-fonts dejavu-sans-fonts liberation-fonts
-			google-noto-fonts-common google-noto-cjk-fonts google-noto-emoji-fonts
-			mpvpaper matugen R-CRAN-phosphoricons adw-gtk3-theme quickshell-git unzip curl
-		)
-
-		log_info "Installing dependencies..."
-		# shellcheck disable=SC2046
-		sudo dnf install -y --best --allowerasing --setopt=install_weak_deps=False $(filter_packages "${PKGS[@]}")
-
-		log_info "Installing Gradia (Flatpak)..."
-		flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-		flatpak install -y flathub be.alexandervanhee.gradia 2>/dev/null || true
-
-		install_phosphor_fonts
-		;;
-
 	arch)
 		if ! has_cmd git || ! has_cmd makepkg; then
 			log_info "Installing git and base-devel..."
@@ -192,8 +141,7 @@ install_dependencies() {
 		;;
 
 	*)
-		log_error "Unsupported distribution: $DISTRO"
-		log_warn "Please install dependencies manually (see nix/packages/)."
+		log_error "Unsupported distribution: $DISTRO (Arch Linux with pacman required)"
 		;;
 	esac
 }
@@ -286,7 +234,6 @@ migrate_old_paths() {
 
 # === Repository Setup ===
 setup_repo() {
-	[[ "$DISTRO" == "nixos" ]] && return
 
 	if [[ ! -d "$INSTALL_PATH" ]]; then
 		log_info "Cloning Ambxst to $INSTALL_PATH..."
@@ -341,7 +288,6 @@ setup_repo() {
 
 # === Quickshell Build ===
 install_quickshell() {
-	[[ "$DISTRO" == "nixos" || "$DISTRO" == "fedora" ]] && return
 	has_cmd qs && {
 		log_info "Quickshell already installed"
 		return
@@ -363,7 +309,6 @@ install_quickshell() {
 
 # === Python Tools ===
 install_python_tools() {
-	[[ "$DISTRO" == "nixos" ]] && return
 	has_cmd pipx || {
 		log_warn "pipx not found, skipping Python tools"
 		return
@@ -374,10 +319,8 @@ install_python_tools() {
 	pipx ensurepath 2>/dev/null || true
 }
 
-# === Service Configuration ===
+# === Service Configuration (systemd) ===
 configure_services() {
-	[[ "$DISTRO" == "nixos" ]] && return
-
 	if has_cmd systemctl; then
 		log_info "Configuring systemd services..."
 
@@ -397,33 +340,13 @@ configure_services() {
 			sudo systemctl enable --now bluetooth
 		}
 
-	elif has_cmd rc-service; then
-		log_info "Configuring OpenRC services..."
-		rc-update show | grep -q "iwd" && {
-			sudo rc-service iwd stop 2>/dev/null || true
-			sudo rc-update del iwd default 2>/dev/null || true
-		}
-		sudo rc-update add NetworkManager default 2>/dev/null || true
-		sudo rc-service NetworkManager start 2>/dev/null || true
-		sudo rc-update add bluetooth default 2>/dev/null || true
-		sudo rc-service bluetooth start 2>/dev/null || true
-
-	elif has_cmd sv; then
-		log_info "Configuring runit services..."
-		local SV_DIR="/var/service"
-		[[ -L "$SV_DIR/iwd" ]] && sudo rm "$SV_DIR/iwd"
-		[[ -d "/etc/sv/NetworkManager" && ! -L "$SV_DIR/NetworkManager" ]] && sudo ln -s /etc/sv/NetworkManager "$SV_DIR/"
-		[[ -d "/etc/sv/bluetooth" && ! -L "$SV_DIR/bluetooth" ]] && sudo ln -s /etc/sv/bluetooth "$SV_DIR/"
-
 	else
-		log_warn "Unknown init system. Please enable NetworkManager and Bluetooth manually."
+		log_warn "systemctl not found. Please enable NetworkManager and Bluetooth manually."
 	fi
 }
 
 # === Launcher Setup ===
 setup_launcher() {
-	[[ "$DISTRO" == "nixos" ]] && return
-
 	[[ -f "$HOME/.local/bin/ambxst" ]] && rm -f "$HOME/.local/bin/ambxst"
 
 	sudo mkdir -p "$BIN_DIR"
@@ -452,4 +375,4 @@ setup_launcher
 
 echo ""
 log_success "Installation complete!"
-[[ "$DISTRO" != "nixos" ]] && echo -e "Run ${GREEN}ambxst${NC} to start."
+echo -e "Run ${GREEN}ambxst${NC} to start."

@@ -5,9 +5,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Use environment variables if set by flake, otherwise fall back to PATH
-QS_BIN="${AMBXST_QS:-qs}"
-NIXGL_BIN="${AMBXST_NIXGL:-}"
+# QuickShell binary (must be in PATH, e.g. ~/.local/bin/qs)
+QS_BIN="qs"
 
 if [ -z "${QML2_IMPORT_PATH:-}" ]; then
   if command -v qs >/dev/null 2>&1; then
@@ -57,7 +56,7 @@ find_ambxst_pid() {
   # QuickShell binary can be named 'qs' or 'quickshell'
   local pid
 
-  # First try with full path (production/flake mode)
+  # First try with full path (production mode)
   pid=$(pgrep -f "qs.*${SCRIPT_DIR}/shell.qml" 2>/dev/null | head -1)
   if [ -z "$pid" ]; then
     pid=$(pgrep -f "quickshell.*${SCRIPT_DIR}/shell.qml" 2>/dev/null | head -1)
@@ -126,8 +125,8 @@ update)
   restart_ambxst
   ;;
 refresh)
-  echo "Refreshing Ambxst profile..."
-  exec nix profile upgrade Ambxst --refresh --impure
+  echo "Refreshing Ambxst..."
+  git -C "$SCRIPT_DIR" pull --ff-only
   ;;
 run)
   CMD="${2:-}"
@@ -441,18 +440,6 @@ goodbye)
     exit 0
   fi
 
-  if [ -f /etc/NIXOS ]; then
-    if nix profile list 2>/dev/null | grep -q "Ambxst"; then
-      echo "Removing from nix profile..."
-      nix profile remove Ambxst
-    elif command -v ambxst >/dev/null 2>&1; then
-      echo "Ambxst was declared in this system. Please remove it from your configuration in order to uninstall."
-    else
-      echo "Ambxst is not installed."
-    fi
-    exit 0
-  fi
-
   read -p "Remove configuration files? (y/N): " -n 1 -r
   echo
   REMOVE_CONFIG=false
@@ -492,12 +479,7 @@ help | --help | -h)
   echo $$ >/tmp/ambxst.pid
 
   # Launch QuickShell with the main shell.qml
-  # If NIXGL_BIN is set (NixOS/Nix setup), use it. Otherwise, just run qs directly.
-  if [ -n "$NIXGL_BIN" ]; then
-    exec "$NIXGL_BIN" "$QS_BIN" -p "${SCRIPT_DIR}/shell.qml"
-  else
-    exec qs -p "${SCRIPT_DIR}/shell.qml"
-  fi
+  exec "$QS_BIN" -p "${SCRIPT_DIR}/shell.qml"
   ;;
 *)
   echo "Error: Unknown command '$1'"

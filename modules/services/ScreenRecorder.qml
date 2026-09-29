@@ -27,7 +27,7 @@ QtObject {
 
     property Process checkCapabilitiesProcess: Process {
         id: checkCapabilitiesProcess
-        command: ["bash", "-c", "if [ -f /run/current-system/sw/bin/nixos-version ]; then if [[ \"$(type -p gpu-screen-recorder)\" == *\"/run/wrappers/bin/\"* ]]; then echo true; else echo false; fi; else echo true; fi"]
+        command: ["bash", "-c", "echo true"]
         running: false
         stdout: StdioCollector {
             onTextChanged: {
