@@ -34,16 +34,22 @@ echo ""
 if ! command -v tlp &> /dev/null; then
     echo "❌ TLP belum terinstall!"
     echo ""
-    echo "Install dengan:"
-    echo "  • Arch/Manjaro: sudo pacman -S tlp"
-    echo "  • Ubuntu/Debian: sudo apt install tlp"
-    echo "  • Fedora: sudo dnf install tlp"
+    echo "Install dengan: sudo pacman -S tlp"
     exit 1
 fi
 
 echo "✓ TLP sudah terinstall"
 echo "  Version: $(tlp --version | head -1)"
 echo ""
+
+# power-profiles-daemon and TLP conflict over the power profiles interface
+if systemctl is-active --quiet power-profiles-daemon 2>/dev/null; then
+    echo "⚠️  power-profiles-daemon sedang aktif dan berkonflik dengan TLP!"
+    echo "   Nonaktifkan dulu:"
+    echo "     sudo systemctl disable --now power-profiles-daemon"
+    echo "   (Ambxst memakai power-profiles-daemon secara default)"
+    exit 1
+fi
 
 # Create sudoers file
 SUDOERS_FILE="/etc/sudoers.d/tlp-${CURRENT_USER}-nopasswd"
