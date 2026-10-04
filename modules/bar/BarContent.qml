@@ -45,18 +45,18 @@ Item {
 
     // Fullscreen detection - check if a toplevel is fullscreen on this screen
     readonly property bool activeWindowFullscreen: {
-      if (!hyprlandMonitor?.activeWorkspace?.toplevels) {
-        return false;
-      }
-
-      const toplevels = hyprlandMonitor.activeWorkspace.toplevels.values;
-
-      for (var i = 0; i < toplevels.length; i++) {
-        if (toplevels[i].wayland && toplevels[i].wayland.fullscreen == true){
-          return true;
+        if (!hyprlandMonitor?.activeWorkspace?.toplevels) {
+            return false;
         }
-      }
-      return false;
+
+        const toplevels = hyprlandMonitor.activeWorkspace.toplevels.values;
+
+        for (var i = 0; i < toplevels.length; i++) {
+            if (toplevels[i].wayland && toplevels[i].wayland.fullscreen == true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Whether auto-hide should be active (not pinned, or fullscreen forces it)
@@ -397,6 +397,13 @@ Item {
                             enableShadow: root.shadowsEnabled
                         }
 
+                        Bar.UseYourBrain {
+                            bar: root
+                            layerEnabled: root.shadowsEnabled
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
+                        }
+
                         // Pin button (horizontal)
                         Loader {
                             active: Config.bar?.showPinButton ?? true
@@ -568,8 +575,6 @@ Item {
                             endRadius: root.outerRadius
                             enableShadow: root.shadowsEnabled
                         }
-
-
                     }
                 }
 
@@ -794,6 +799,13 @@ Item {
                             endRadius: root.innerRadius
                             vertical: true
                             enableShadow: root.shadowsEnabled
+                        }
+
+                        Bar.UseYourBrain {
+                            bar: root
+                            layerEnabled: root.shadowsEnabled
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
                         }
                     }
                 }
