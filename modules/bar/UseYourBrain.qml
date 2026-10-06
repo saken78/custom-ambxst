@@ -49,7 +49,7 @@ Item {
             Text {
                 id: labelH
                 textFormat: Text.RichText
-                text: "Use Your Brain, It’s Not <i><font color=\"" + Colors.red + "\">Decorative</font></i>"
+                text: "Use Your Brain, It’s Not <font color=\"" + Colors.red + "\">Decorative</font>"
                 color: Colors.overBackground
                 font.family: Styling.defaultFont
                 font.pixelSize: Styling.fontSize(0)
