@@ -391,11 +391,11 @@ Item {
                             endRadius: (root.pinButtonVisible) ? root.innerRadius : (root.dockAtStart ? root.innerRadius : root.outerRadius)
                         }
 
-                        Bar.TerminalButton {
-                            startRadius: root.innerRadius
-                            endRadius: root.innerRadius
-                            enableShadow: root.shadowsEnabled
-                        }
+                        // Bar.TerminalButton {
+                        //     startRadius: root.innerRadius
+                        //     endRadius: root.innerRadius
+                        //     enableShadow: root.shadowsEnabled
+                        // }
 
                         Bar.UseYourBrain {
                             bar: root
