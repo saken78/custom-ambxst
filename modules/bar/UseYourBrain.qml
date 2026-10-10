@@ -42,14 +42,14 @@ Item {
             Text {
                 text: Icons.brain
                 font.family: Icons.font
-                font.pixelSize: 16
+                font.pixelSize: 18
                 color: Colors.blue
             }
 
             Text {
                 id: labelH
                 textFormat: Text.RichText
-                text: "Use Your Brain, It’s Not <font color=\"" + Colors.red + "\">Decorative</font>"
+                text: "Actually, Use Your <font color=\"" + Colors.red + "\">Brain</font>"
                 color: Colors.overBackground
                 font.family: Styling.defaultFont
                 font.pixelSize: Styling.fontSize(0)
