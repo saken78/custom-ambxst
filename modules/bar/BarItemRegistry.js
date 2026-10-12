@@ -10,6 +10,7 @@ var items = [
     { "id": "tools", "label": "Tools" },
     { "id": "systray", "label": "System Tray" },
     { "id": "controls", "label": "Controls" },
+    { "id": "androidWebcam", "label": "Android Webcam" },
     { "id": "battery", "label": "Battery" },
     { "id": "clock", "label": "Clock" },
     { "id": "power", "label": "Power" },
@@ -31,6 +32,7 @@ var verticalItemIds = [
     "workspaces",
     "pin",
     "controls",
+    "androidWebcam",
     "battery",
     "clock",
     "power"
@@ -38,4 +40,4 @@ var verticalItemIds = [
 
 var defaultLeft = ["launcher", "workspaces", "layout", "pin"];
 var defaultCenter = [];
-var defaultRight = ["presets", "tools", "systray", "controls", "battery", "clock", "power"];
+var defaultRight = ["presets", "tools", "systray", "controls", "androidWebcam", "battery", "clock", "power"];

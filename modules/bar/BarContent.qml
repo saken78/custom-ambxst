@@ -383,6 +383,13 @@ Item {
                             endRadius: root.innerRadius
                         }
 
+                        Bar.UseYourBrain {
+                            bar: root
+                            layerEnabled: root.shadowsEnabled
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
+                        }
+
                         LayoutSelectorButton {
                             id: layoutSelectorButton
                             bar: root
@@ -396,13 +403,6 @@ Item {
                         //     endRadius: root.innerRadius
                         //     enableShadow: root.shadowsEnabled
                         // }
-
-                        Bar.UseYourBrain {
-                            bar: root
-                            layerEnabled: root.shadowsEnabled
-                            startRadius: root.innerRadius
-                            endRadius: root.innerRadius
-                        }
 
                         // Pin button (horizontal)
                         Loader {
@@ -547,6 +547,14 @@ Item {
 
                         StatsButton {
                             id: statsButton
+                            bar: root
+                            layerEnabled: root.shadowsEnabled
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
+                        }
+
+                        AndroidWebcamButton {
+                            id: androidWebcamButton
                             bar: root
                             layerEnabled: root.shadowsEnabled
                             startRadius: root.innerRadius
@@ -779,6 +787,14 @@ Item {
 
                         StatsButton {
                             id: statsButtonVert
+                            bar: root
+                            layerEnabled: root.shadowsEnabled
+                            startRadius: root.innerRadius
+                            endRadius: root.innerRadius
+                        }
+
+                        AndroidWebcamButton {
+                            id: androidWebcamButtonVert
                             bar: root
                             layerEnabled: root.shadowsEnabled
                             startRadius: root.innerRadius
