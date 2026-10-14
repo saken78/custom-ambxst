@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.Notifications
 import qs.config
 
 Singleton {
@@ -133,29 +134,31 @@ Singleton {
     function sendUpdateNotification(newVersion) {
         const summary = "Ambxst update available!";
         const body = newVersion + " available! (Installed " + root.currentVersion + ")";
-        const cmd = "notify-send -a 'Ambxst Update' -i system-software-update -w '" + summary + "' '" + body + "' --action=changelog=Changelog --action=later='Maybe later' --action=update=Update";
-        
-        notificationProcess.running = false;
-        notificationProcess.command = ["bash", "-c", cmd];
-        notificationProcess.running = true;
-    }
 
-    property Process notificationProcess: Process {
-        id: notificationProcess
-        stdout: StdioCollector {
-            id: stdoutCollector
-        }
-        onExited: exitCode => {
-            const action = stdoutCollector.text.trim();
-            if (action === "changelog") {
-                Quickshell.execDetached(["xdg-open", root.changelogUrl]);
-            } else if (action === "later") {
-                root.nextCheckTime = Date.now() + 8 * 3600000;
-                root.saveCache();
-            } else if (action === "update") {
-                const updateCmd = "kitty -o allow_remote_control=yes --listen-on unix:/tmp/mykitty sh -c \"sleep 0.2 && kitten @ --to unix:/tmp/mykitty send-text 'ambxst update'; exec $SHELL\"";
-                Quickshell.execDetached(["bash", "-c", updateCmd]);
+        // Delivered through the shell's own notification service instead of
+        // `notify-send -w`, which would keep a bash process alive waiting
+        // for a button press.
+        Notifications.notifyInternal({
+            "summary": summary,
+            "body": body,
+            "actions": [
+                { "identifier": "update", "text": "Update" },
+                { "identifier": "later", "text": "Maybe later" },
+                { "identifier": "changelog", "text": "Changelog" }
+            ],
+            "actionHandlers": {
+                "changelog": function () {
+                    Quickshell.execDetached(["xdg-open", root.changelogUrl]);
+                },
+                "later": function () {
+                    root.nextCheckTime = Date.now() + 8 * 3600000;
+                    root.saveCache();
+                },
+                "update": function () {
+                    const updateCmd = "kitty -o allow_remote_control=yes --listen-on unix:/tmp/mykitty sh -c \"sleep 0.2 && kitten @ --to unix:/tmp/mykitty send-text 'ambxst refresh'; exec $SHELL\"";
+                    Quickshell.execDetached(["bash", "-c", updateCmd]);
+                }
             }
-        }
+        });
     }
 }
